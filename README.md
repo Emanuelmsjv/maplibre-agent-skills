@@ -14,10 +14,10 @@ We’d love your help expanding this collection. Whether you’re a student stil
 
 **How to get started:**
 
-1. Browse [open issues](https://github.com/maplibre/maplibre-agent-skills/issues) for planned skills and pick one that interests you
-2. Read [CONTRIBUTING.md](CONTRIBUTING.md) for skill structure, format, and quality guidelines
-3. Use existing skills (e.g. [maplibre-tile-sources](skills/maplibre-tile-sources/SKILL.md)) as a reference for style and depth
-4. Open an issue first to discuss your idea — we’re happy to help refine scope and requirements
+1. Browse [open issues](https://github.com/maplibre/maplibre-agent-skills/issues) for planned skills and comment if there is one that you would like to write
+2. Have an idea that is not on the list? Open an issue first to discuss — we’re happy to help refine scope and requirements
+3. Read [CONTRIBUTING.md](CONTRIBUTING.md) for skill structure, format, and quality guidelines
+4. Use existing skills (e.g. [maplibre-tile-sources](skills/maplibre-tile-sources/SKILL.md)) as a reference for style and depth
 
 No prior experience with Agent Skills? The format is straightforward: a `SKILL.md` file with YAML frontmatter and markdown content. See the [skill template](CONTRIBUTING.md#4-example-template) in CONTRIBUTING.md.
 
@@ -61,21 +61,25 @@ Use when:
 - Debugging blank maps or CORS issues
 - Migrating from Mapbox and need equivalent tile sources
 
-Covers: OpenFreeMap (no API key), MapTiler, Stadia Maps, PMTiles, Protomaps (pre-built downloads and CLI extracts), and self-hosted OpenMapTiles. Includes glyphs, sprites, and CORS.
+Covers: The full range of hosted and self-hosted options. Should you want to host your own, explains ancillary requirements around styles, glyphs, sprites, and CORS.
 
 [View skill →](skills/maplibre-tile-sources/SKILL.md)
 
 ### maplibre-pmtiles-patterns
 
-**Serverless vector and raster tiles with PMTiles.** Use when hosting tiles without a tile server (S3, R2, GitHub Pages) or generating with Planetiler/tippecanoe. [View skill →](skills/maplibre-pmtiles-patterns/SKILL.md)
+Use when hosting vector or raster tiles without a tile server (S3, R2, GitHub Pages) or generating with Planetiler/tippecanoe. 
+
+[View skill →](skills/maplibre-pmtiles-patterns/SKILL.md)
 
 ### maplibre-mapbox-migration
 
-**Migrating from Mapbox GL JS to MapLibre GL JS.** Use when moving an existing Mapbox map to MapLibre or choosing tile sources and services after leaving Mapbox. Covers package/import swap, removing token, replacing style URLs, plugins, and Mapbox API alternatives. Lists sources used so contributors can be looped in. [View skill →](skills/maplibre-mapbox-migration/SKILL.md)
+**Migrating from Mapbox GL JS to MapLibre GL JS.** Use when moving an existing Mapbox map to MapLibre or choosing tile sources and services after leaving Mapbox. Covers package/import swap, removing token, replacing style URLs, plugins, and Mapbox API alternatives. Lists sources used so contributors can be looped in. 
+
+[View skill →](skills/maplibre-mapbox-migration/SKILL.md)
 
 ### Project plan — skills status
 
-**In this repo (link to these only):**
+**In this repo:**
 
 | Skill                                                                  | Description                                                                           |
 | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
@@ -153,7 +157,7 @@ Runs format check, spellcheck, markdown lint, and skill validation. Pre-push hoo
 Each skill lives under `skills/<skill-name>/`:
 
 - **SKILL.md** — Required. YAML frontmatter (`name`, `description`) plus markdown content.
-- **AGENTS.md** — Optional. Short reference for the AI.
+- **AGENTS.md** — Optional. Short reference for the LLM.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for how to add or change skills.
 
