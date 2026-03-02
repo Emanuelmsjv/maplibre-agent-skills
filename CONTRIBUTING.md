@@ -46,6 +46,12 @@ npm install
 4. **Terminology** — textlint (e.g. `MapLibre` not `Maplibre`) — fix all issues with `npm run fix:terminology`
 5. **Skills validation** — YAML frontmatter and structure — fix manually in `SKILL.md`
 
+You haven't gotten all the way through the checks until you see:
+
+```text
+✅ All skills are valid
+```
+
 ### Fixing Issues
 
 **Spell check:** When `npm run spellcheck` flags a word that is correct (e.g. a project name, library, or acronym), add it to the `words` array in [cspell.config.json](cspell.config.json):
