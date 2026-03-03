@@ -30,6 +30,12 @@ Agent Skills are folders of instructions and resources that AI assistants (e.g. 
 
 ## Available Skills
 
+### maplibre-mapbox-migration
+
+**Migrating from Mapbox GL JS to MapLibre GL JS.** Use when moving an existing Mapbox map to MapLibre or choosing tile sources and services after leaving Mapbox. Covers package/import swap, removing token, replacing style URLs, plugins, and Mapbox API alternatives. Lists sources used so contributors can be looped in.
+
+[View skill →](skills/maplibre-mapbox-migration/SKILL.md)
+
 ### maplibre-tile-sources
 
 **Choosing and configuring tile sources for MapLibre GL JS.**
@@ -42,37 +48,17 @@ Use when:
 - Debugging blank maps or CORS issues
 - Migrating from Mapbox and need equivalent tile sources
 
-Covers: OpenFreeMap (no API key), MapTiler, Stadia Maps, PMTiles, Protomaps (pre-built downloads and CLI extracts), and self-hosted OpenMapTiles. Includes glyphs, sprites, and CORS.
+Covers: The full range of hosted and self-hosted options. Should you want to host your own, explains ancillary requirements around styles, glyphs, sprites, and CORS.
 
 [View skill →](skills/maplibre-tile-sources/SKILL.md)
 
 ### maplibre-pmtiles-patterns
 
-**Serverless vector and raster tiles with PMTiles.** Use when hosting tiles without a tile server (S3, R2, GitHub Pages) or generating with Planetiler/tippecanoe. [View skill →](skills/maplibre-pmtiles-patterns/SKILL.md)
+Use when hosting vector or raster tiles without a tile server (S3, R2, GitHub Pages) or generating with Planetiler/tippecanoe.
 
-### maplibre-mapbox-migration
+[View skill →](skills/maplibre-pmtiles-patterns/SKILL.md)
 
-**Migrating from Mapbox GL JS to MapLibre GL JS.** Use when moving an existing Mapbox map to MapLibre or choosing tile sources and services after leaving Mapbox. Covers package/import swap, removing token, replacing style URLs, plugins, and Mapbox API alternatives. Lists sources used so contributors can be looped in. [View skill →](skills/maplibre-mapbox-migration/SKILL.md)
-
-### Project plan — skills status
-
-**In this repo (link to these only):**
-
-| Skill                                                                  | Description                                                                           |
-| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| [maplibre-tile-sources](skills/maplibre-tile-sources/SKILL.md)         | Tile sources, glyphs, sprites, OpenFreeMap, MapTiler, PMTiles, Protomaps, self-hosted |
-| [maplibre-pmtiles-patterns](skills/maplibre-pmtiles-patterns/SKILL.md) | Serverless PMTiles: hosting, generating, MapLibre protocol                            |
-| [maplibre-mapbox-migration](skills/maplibre-mapbox-migration/SKILL.md) | Mapbox GL JS → MapLibre migration                                                     |
-
-**Planned (not yet in repo):**
-
-- maplibre-open-search-patterns — Geocoding and search (Nominatim, Photon, Pelias)
-- maplibre-geospatial-operations — Routing and geometry (OSRM, OpenRouteService, Turf.js)
-- maplibre-style-patterns — Layer and source configuration for styles
-- maplibre-web-integration-patterns — Framework integration (React, Vue, Svelte, etc.)
-- maplibre-web-performance-patterns, maplibre-cartography, maplibre-style-quality, and others as needed
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) to add or request skills.
+Each issue includes content outlines, requirements, and references from the project plan. See [CONTRIBUTING.md](CONTRIBUTING.md) to add or request skills.
 
 ## How to Use
 
@@ -120,22 +106,16 @@ npm install
 npm run check
 ```
 
-Runs format check, spellcheck, markdown lint, and skill validation. Pre-push hook runs the same checks.
+Runs format check, spellcheck, terminology check, markdown lint, and skill validation. Pre-push hook runs the same checks.
 
 ### Skill layout
 
 Each skill lives under `skills/<skill-name>/`:
 
 - **SKILL.md** — Required. YAML frontmatter (`name`, `description`) plus markdown content.
-- **AGENTS.md** — Optional. Short reference for the AI.
+- **AGENTS.md** — Optional. Short reference for the LLM.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for how to add or change skills.
-
-## Resources
-
-- [MapLibre GL JS](https://maplibre.org/maplibre-gl-js/docs/)
-- [MapLibre Style Spec](https://maplibre.org/maplibre-style-spec/)
-- [Agent Skills](https://agentskills.io) / [Skills spec](https://github.com/anthropics/skills)
+See [CONTRIBUTING.md](CONTRIBUTING.md) to contribute a skill — whether you're fixing an error, improving an example, or adding new expertise in areas like framework integration, tile pipelines, geocoding, or routing. All experience levels are welcome.
 
 ## License
 
