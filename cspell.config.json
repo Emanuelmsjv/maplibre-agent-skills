@@ -37,15 +37,19 @@
     "pmtiles",
     "protomaps",
     "Shapefile",
+    "spritesheets",
     "swiftui",
     "textlint",
     "textlintrc",
     "tileserver",
+    "tileset",
     "tilesets",
     "tippecanoe",
+    "restyable",
     "viewport",
     "WCAG",
-    "webgl"
+    "webgl",
+    "wmts"
   ],
   "ignorePaths": [
     "node_modules",
