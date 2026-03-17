@@ -52,10 +52,10 @@ for (const file of files) {
 
     let line = lines[i];
 
-    // Split on inline code spans to avoid replacing inside them
-    const parts = line.split(/(`[^`]+`)/);
+    // Split on inline code spans and markdown links to avoid replacing inside them
+    const parts = line.split(/(`[^`]+`|\[[^\]]*\]\([^)]*\))/);
     const fixed = parts.map((part) => {
-      if (part.startsWith('`')) return part; // skip inline code
+      if (part.startsWith('`') || /^\[[^\]]*\]\(/.test(part)) return part; // skip inline code and links
       for (const term of terms) {
         const pattern = new RegExp(
           `(?<![\\w/.-])${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\w-])`,

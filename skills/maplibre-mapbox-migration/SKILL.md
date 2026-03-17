@@ -23,7 +23,7 @@ Common reasons teams switch from Mapbox to MapLibre:
 - **Open-source license** — MapLibre is BSD-3-Clause; no vendor lock-in or proprietary terms
 - **No access token** — The library does not require a Mapbox token; tile sources may have their own keys or none (e.g. OpenFreeMap)
 - **Cost** — Avoid Mapbox map-load and API pricing; use free or fixed-cost tile and geocoding providers
-- **Self-hosting** — Use your own tiles (PMTiles, tileserver-gl, martin) or any third-party source
+- **Self-hosting** — Use your own tiles (PMTiles, tileserver-gl, Martin) or any third-party source
 - **Community** — MapLibre is maintained by the MapLibre organization and community; style spec and APIs evolve in the open
 - **Community-supported funding** — MapLibre is funded by donations from many companies and individuals; there is no single commercial backer, so the project stays aligned with the community
 - **Open vector tile format (MLT)** — MapLibre offers [MapLibre Tile (MLT)](https://maplibre.org/maplibre-tile-spec/), a modern alternative to Mapbox Vector Tiles (MVT) with better compression and support for 3D coordinates and elevation; supported in GL JS and Native, and can be generated with Planetiler

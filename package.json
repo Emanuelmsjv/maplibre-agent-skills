@@ -11,6 +11,7 @@
     "validate:skills": "node scripts/validate-skills.js",
     "lint:terminology": "node scripts/terminology-check.js",
     "fix:terminology": "node scripts/terminology-fix.js",
+    "eval": "npx promptfoo eval",
     "check": "npm run format:check && npm run spellcheck && npm run lint:markdown && npm run lint:terminology && npm run validate:skills",
     "setup": "node scripts/setup-hooks.js",
     "postinstall": "node scripts/setup-hooks.js"

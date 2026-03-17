@@ -30,7 +30,7 @@ PMTiles is a single-file format for vector or raster map tiles. You host one (or
 - You have a bounded dataset (country, region, theme) that fits in one or a few files.
 - You want simple deployment and low ops (upload file, set cache headers, done).
 
-**When to prefer a tile server (e.g. tileserver-gl, martin):**
+**When to prefer a tile server (e.g. tileserver-gl, Martin):**
 
 - You need dynamic tiles from a database (PostGIS) or frequently updated data.
 - You have a very large global dataset and want to generate tiles on demand or by region only.
