@@ -1,0 +1,73 @@
+description: Evals for the maplibre-mapbox-migration skill
+
+prompts:
+  - file://lib/skill-prompt.mjs
+
+providers:
+  # Cerebras — recommended; free tier (14,400 RPD / 64K TPM); used in CI
+  # Sign up at inference.cerebras.ai, set CEREBRAS_API_KEY
+  - id: cerebras:qwen-3-235b-a22b-instruct-2507
+    label: cerebras-qwen
+
+evaluateOptions:
+  delay: 500 # ms between requests; increase to 10000 for Gemini free tier (10 RPM)
+
+defaultTest:
+  vars:
+    skillFile: skills/maplibre-mapbox-migration/SKILL.md
+  options:
+    provider: cerebras:qwen-3-235b-a22b-instruct-2507
+
+tests:
+  - description: explicit — what changes are required to migrate?
+    vars:
+      prompt: >
+        I have an app using Mapbox GL JS v1. What do I need to change
+        to migrate it to MapLibre GL JS?
+    assert:
+      - type: icontains
+        value: maplibre-gl
+      - type: llm-rubric
+        value: >
+          Identifies the package change (replace mapbox-gl with maplibre-gl in
+          both the package name and import). States that the Mapbox access token
+          is NOT required and should be removed. Notes that mapbox:// tile and
+          style URLs do not work in MapLibre GL JS. Recommends an open alternative
+          for tiles or styles (e.g. OpenFreeMap, PMTiles, MapTiler). Does NOT
+          suggest setting a Mapbox access token as part of the migration solution.
+
+  - description: contextual — Mapbox Studio style in MapLibre
+    vars:
+      prompt: >
+        I designed a style in Mapbox Studio with custom colors and layers.
+        Can I load it directly in MapLibre GL JS?
+    assert:
+      - type: llm-rubric
+        value: >
+          Explains that Mapbox Studio styles use mapbox:// URLs which do not work
+          in MapLibre GL JS. Recommends an alternative approach (e.g. export the
+          style JSON and replace tile sources, or use Maputnik to recreate the
+          style). Does NOT suggest using a Mapbox access token as a workaround.
+
+  - description: anti-pattern — mapbox:// URL kept after migration
+    vars:
+      prompt: >
+        I switched to MapLibre but my map is blank. I'm using
+        style: 'mapbox://styles/mapbox/streets-v12'. What is wrong?
+    assert:
+      - type: llm-rubric
+        value: >
+          Explains clearly that mapbox:// style URLs do not work in
+          MapLibre GL JS, and provides a specific working replacement
+          style URL. Does NOT suggest setting a Mapbox access token
+          as a fix.
+
+  - description: negative — out-of-scope question (fitBounds)
+    vars:
+      prompt: How do I fit the map view to the bounds of a GeoJSON layer?
+    assert:
+      - type: llm-rubric
+        value: >
+          Answers the fitBounds question correctly without bringing up
+          Mapbox migration steps or suggesting the developer switch
+          libraries as if it were relevant to this question.

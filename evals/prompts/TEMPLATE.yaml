@@ -12,14 +12,14 @@
 #     --config evals/prompts/maplibre-your-skill-name.yaml \
 #     --no-cache -j 1
 #
-# IMPORTANT: Never use --providers on the CLI — it bypasses lib/skill-prompt.js
+# IMPORTANT: Never use --providers on the CLI — it bypasses lib/skill-prompt.mjs
 # and the skill will not be injected into the system prompt.
 # Provider must be configured in this file.
 
 description: Evals for the maplibre-your-skill-name skill
 
 prompts:
-  - file://lib/skill-prompt.js
+  - file://lib/skill-prompt.mjs
 
 providers:
   # Cerebras — recommended; free tier (14,400 RPD / 64K TPM); used in CI

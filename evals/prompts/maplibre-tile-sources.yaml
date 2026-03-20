@@ -1,6 +1,6 @@
 # Evals for the maplibre-tile-sources skill.
 #
-# Skill content is injected as the system prompt via lib/skill-prompt.js.
+# Skill content is injected as the system prompt via lib/skill-prompt.mjs.
 #
 # Tests selected by baseline methodology: each question was run without the
 # skill (compare YAML) and confirmed to fail before being added here. Tests
@@ -12,13 +12,13 @@
 #
 # For a stronger judge, add: --grader google:gemini-2.5-flash-lite
 #
-# IMPORTANT: Do NOT use --providers CLI flag — it bypasses skill-prompt.js
+# IMPORTANT: Do NOT use --providers CLI flag — it bypasses skill-prompt.mjs
 # and the skill will not be injected. Provider must be set in this YAML.
 
 description: Evals for the maplibre-tile-sources skill
 
 prompts:
-  - file://lib/skill-prompt.js
+  - file://lib/skill-prompt.mjs
 
 providers:
   # Cerebras — default for CI; free, 14,400 RPD; no practical limit for 4 tests

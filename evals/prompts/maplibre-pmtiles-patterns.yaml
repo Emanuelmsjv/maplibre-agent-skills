@@ -1,0 +1,77 @@
+description: Evals for the maplibre-pmtiles-patterns skill
+
+prompts:
+  - file://lib/skill-prompt.mjs
+
+providers:
+  # Cerebras — recommended; free tier (14,400 RPD / 64K TPM); used in CI
+  # Sign up at inference.cerebras.ai, set CEREBRAS_API_KEY
+  - id: cerebras:qwen-3-235b-a22b-instruct-2507
+    label: cerebras-qwen
+
+evaluateOptions:
+  delay: 500 # ms between requests; increase to 10000 for Gemini free tier (10 RPM)
+
+defaultTest:
+  vars:
+    skillFile: skills/maplibre-pmtiles-patterns/SKILL.md
+  options:
+    provider: cerebras:qwen-3-235b-a22b-instruct-2507
+
+tests:
+  - description: explicit — loading a PMTiles file in MapLibre
+    vars:
+      prompt: How do I load a .pmtiles file as a source in MapLibre GL JS?
+    assert:
+      - type: icontains
+        value: addProtocol
+      - type: icontains
+        value: pmtiles://
+      - type: llm-rubric
+        value: >
+          Mentions addProtocol or the pmtiles protocol handler (from the pmtiles
+          package). Includes or references the pmtiles npm package or CDN URL.
+          Does NOT suggest that a tile server is required to serve PMTiles. Does
+          NOT show the old v3 callback-style addProtocol signature as the solution.
+          Includes a source definition using the pmtiles:// URL prefix.
+
+  - description: implicit — serverless tile hosting on GitHub Pages
+    vars:
+      prompt: >
+        I want to host map tiles on GitHub Pages without running any
+        backend. Is that possible with MapLibre GL JS?
+    assert:
+      - type: icontains
+        value: pmtiles
+      - type: llm-rubric
+        value: >
+          Recommends PMTiles as the solution for serverless tile hosting.
+          Explains that PMTiles files can be served from static storage (e.g.
+          GitHub Pages, S3, R2) using HTTP range requests with no backend.
+          Does NOT suggest spinning up a tile server.
+
+  - description: anti-pattern — addProtocol broke after upgrading to v4
+    vars:
+      prompt: >
+        My code uses addProtocol with a callback function to serve custom
+        tiles, but after upgrading from MapLibre GL JS v3 to v4 it
+        stopped working. How do I fix it?
+    assert:
+      - type: icontains
+        value: addProtocol
+      - type: llm-rubric
+        value: >
+          Explains that the addProtocol API changed in v4: the callback
+          signature is no longer used. The response must show the v4
+          Promise-based signature and must NOT show the old callback-style
+          signature as the solution.
+
+  - description: negative — out-of-scope question (custom icon marker)
+    vars:
+      prompt: How do I add a marker with a custom icon image in MapLibre?
+    assert:
+      - type: llm-rubric
+        value: >
+          Answers the custom marker/icon question correctly without
+          recommending PMTiles or discussing PMTiles as if it were
+          relevant to this question.

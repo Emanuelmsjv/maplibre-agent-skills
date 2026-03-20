@@ -6,20 +6,19 @@
  * e.g. "skills/maplibre-tile-sources/SKILL.md".
  */
 
-const fs = require('fs');
-const path = require('path');
+import { readFileSync } from 'fs';
+import { resolve, join } from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-const repoRoot = path.resolve(__dirname, '../../..');
+const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 
-module.exports = function ({ vars }) {
+export default function ({ vars }) {
   const messages = [];
   if (vars.injectSkill !== 'false') {
-    const skillContent = fs.readFileSync(
-      path.join(repoRoot, vars.skillFile),
-      'utf8'
-    );
+    const skillContent = readFileSync(join(repoRoot, vars.skillFile), 'utf8');
     messages.push({ role: 'system', content: skillContent });
   }
   messages.push({ role: 'user', content: vars.prompt });
   return JSON.stringify(messages);
-};
+}
