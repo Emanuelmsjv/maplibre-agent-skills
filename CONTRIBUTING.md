@@ -23,14 +23,42 @@ We’d love your help expanding this collection. Whether you’re a student stil
 **How to get started:**
 
 1. **Check existing skills** — Review [skills/](./skills) to avoid duplication
-2. Browse [open issues](https://github.com/maplibre/maplibre-agent-skills/issues) for planned skills and comment if there is one that you would like to write
-3. **Open an issue** — Open an issue using the [issue template](./.github/ISSUE_TEMPLATE/skill_request.md) if you have an idea that is not yet on the list — we’re happy to help refine scope and requirements
+2. **Browse open issues** — Check [open issues](https://github.com/maplibre/maplibre-agent-skills/issues) for planned skills and comment on one you'd like to write
+3. **Open an issue** — Use the [issue template](./.github/ISSUE_TEMPLATE/skill_request.md) if you have an idea not yet on the list — we’re happy to help refine scope and requirements
 4. **Understand the requirements** — Review this page for skill structure, format, and quality guidelines
 5. **Review examples** — Use existing skills (e.g. [maplibre-tile-sources](skills/maplibre-tile-sources/SKILL.md)) as a reference for style and depth
 
-No prior experience with Agent Skills? The format is a `SKILL.md` file with YAML frontmatter and markdown content plus optional `AGENTS.md` with a quick summary. See the [skill template](CONTRIBUTING.md#4-example-template).
+New to [Agent Skills](https://agentskills.io)? The [skills specification](https://github.com/anthropics/skills) describes the general format. See [SKILL.md format](#3-skillmd-format) for how skills are structured in this repo specifically.
 
-## Development Setup
+## Editing Skills
+
+### Skill Quality Standards
+
+Skills in this repo must be:
+
+- **Accurate** — Matches MapLibre and referenced APIs/docs
+- **Actionable** — Clear guidance, not just description
+- **Attribution** — Reference primary sources wherever possible, and always preserve Mapbox copyright (see [A note about adapted content](#a-note-about-adapted-content))
+- **Consistent** — Format and style in line with existing skills
+
+If you spot an error, omission, or quality gap, open an issue — or comment on an existing one you'd like to fix to confirm a maintainer is available to review.
+
+### Quality assurance mechanisms
+
+Two automated systems enforce quality in this repository:
+
+- **`npm run check`** — formatting, spelling, markdown lint, and terminology. Runs as a pre-push hook. See [Check format and spelling](#check-format-and-spelling).
+- **Evals** — [Promptfoo](https://promptfoo.dev/) test prompts and rubrics that verify a skill answers questions correctly. They serve two purposes:
+  1. **Requirements** — Written before the skill, reviewed by a qualified reviewer. The rubric defines what a correct answer must include, independent of the skill's phrasing.
+  2. **Regression gate** — CI runs evals on every PR that touches a skill. All assertions must pass before the PR can merge.
+
+When modifying an existing skill: update or add eval tests to cover the change, [run evals locally](#running-evals-locally) to confirm nothing breaks, and do not remove tests to make a PR pass — update them with reviewer sign-off instead.
+
+See [`evals/README.md`](evals/README.md) for full guidance on writing prompts and rubrics.
+
+### Development Setup
+
+**1. Clone the repo and install dependencies:**
 
 ```bash
 git clone https://github.com/maplibre/maplibre-agent-skills.git
@@ -38,41 +66,95 @@ cd maplibre-agent-skills
 npm install
 ```
 
-`npm install` installs a pre-push git hook. Run `npm run check` frequently while developing — it runs all checks and stops at the first failure:
+`npm install` installs a pre-push git hook that runs checks before every push.
 
-1. **Formatting** — Prettier (`.md`, `.json`, `.js`) — fix with `npm run format`
-2. **Spelling** — cspell (markdown) — fix manually or add to [cspell.config.json](cspell.config.json) (see below)
-3. **Markdown linting** — markdownlint — fix manually; see error output for rule and line number
-4. **Terminology** — proper noun capitalization (e.g. `MapLibre` not `Maplibre`) — fix all issues with `npm run fix:terminology`
-5. **Skills validation** — YAML frontmatter and structure — fix manually in `SKILL.md`
+**2. Set up eval providers** — See [evals/README.md](evals/README.md#setup) for current recommended providers, API keys, and setup instructions.
 
-You haven't gotten all the way through the checks until you see:
+### Running evals locally
+
+Evals are stored in `evals/prompts`. Run the eval for the skill you are working on:
+
+```bash
+npx promptfoo@latest eval \
+  --config evals/prompts/<skill-name>.yaml \
+  --grader google:gemini-2.5-flash-lite \
+  --no-cache -j 1
+```
+
+Omit `--grader google:gemini-2.5-flash-lite` if you don't have a `GOOGLE_API_KEY` — Cerebras will be used as judge instead.
+
+Promptfoo will prompt to install if it isn't already. Results will show up in your terminal; optionally you can view and scroll through past results in your browser locally.
+
+### Check format and spelling
+
+Run `npm run check` frequently while developing — it runs all checks and stops at the first failure:
+
+1. **Formatting** — Prettier (`.md`, `.json`, `.js`)
+2. **Spelling** — cspell (markdown)
+3. **Markdown linting** — markdownlint
+4. **Terminology** — proper noun capitalization (e.g. `MapLibre` not `Maplibre`)
+5. **Skills validation** — YAML frontmatter and structure
+
+All checks pass when the output ends with:
 
 ```text
 ✅ All skills are valid
 ```
 
+See [Fixing Issues](#fixing-issues) below for how to resolve errors from each check.
+
 ### Fixing Issues
 
-**Markdown linting:** The most common issue is **MD060** (table column spacing) — `npm run format` fixes this automatically. The other likely issue is **MD051** (invalid link fragment): if you link to a heading with `[text](#anchor)`, verify the heading exists and the anchor matches exactly (lowercase, spaces replaced with hyphens). Other errors include the rule code and line number in the output — look up the rule by its ID if the message isn't self-explanatory.
+Most issues are auto-fixable:
 
-**Terminology:** Flags incorrect capitalization of proper nouns in prose — for example `maplibre` instead of `MapLibre`, or `geojson` instead of `GeoJSON`. Run `npm run fix:terminology` to auto-fix all flagged terms at once. The full list of enforced terms is in [`terminology.txt`](terminology.txt). The check applies to standalone words in prose only; hyphenated identifiers, package names, and URL paths are intentionally ignored. To add a new proper noun, add it in its canonical form to `terminology.txt`.
+| Check            | Fix                                                                       |
+| ---------------- | ------------------------------------------------------------------------- |
+| Formatting       | `npm run format`                                                          |
+| Terminology      | `npm run fix:terminology`                                                 |
+| Markdown linting | `npm run format` fixes MD060 (table spacing); others require manual edits |
+| Spell check      | Correct manually                                                          |
 
-**Spell check:** Correct misspelled words manually.
+**Markdown linting details:** Error output includes the rule ID and line number. The most common manual fix is **MD051** (invalid link fragment) — verify the heading exists and the anchor is lowercase with hyphens.
 
-Occasionally you will introduce new words when writing new skills. When the checks flag a word that is correct, the right place to add it depends on the type of word:
+**Terminology details:** Flags incorrect capitalization of proper nouns in prose (e.g. `maplibre` → `MapLibre`). Applies to standalone words only; package names and URL paths are ignored.
 
-- **Proper nouns** (product names, project names, acronyms with specific capitalization) — add to [`terminology.txt`](terminology.txt). Both the spell checker and terminology checker read from this file.
-- **Other technical terms** (common domain words, lowercase jargon) — add to the `words` array in [`cspell.config.json`](cspell.config.json), alphabetically sorted.
-- **Do not add URL slugs or domain names** — fix the link text instead (e.g. `[Service Name](https://...)` not `[service-name.com](https://...)`). Descriptive link text is also better for accessibility.
+**Adding new words:** When a check flags a word that is correct:
 
-**Bypass pre-push (not recommended):** `git push --no-verify`. Do this if you are not sure how to resolve an issue. CI will still run checks; your reviewer should be able to help. The issues should be addressed before your PR is merged.
+- **Proper nouns** — add to [`terminology.txt`](terminology.txt) (used by both the spell checker and terminology checker)
+- **Other technical terms** — add to the `words` array in [`cspell.config.json`](cspell.config.json), alphabetically sorted
+- **Do not add URL slugs** — fix the link text instead (e.g. `[Service Name](https://...)`)
+
+**Bypass pre-push:** `git push --no-verify`. Use this if you are stuck or unsure how to resolve a check. CI will still run checks; your reviewer can help resolve them before merge.
+
+### Submitting a Change
+
+For bug fixes, typos, and documentation edits:
+
+1. Create a branch: `git checkout -b fix-your-description`
+2. Make your edit.
+3. Run `npm run check` and fix any issues.
+4. If you edited skill content, run evals to confirm nothing regressed — see [Running evals locally](#running-evals-locally).
+5. Push and open a PR describing what you changed and why.
+
+For new skills, follow the full workflow in [Creating a New Skill](#creating-a-new-skill).
 
 ## Creating a New Skill
 
-Agent Skills are structured markdown files that give AI coding assistants domain expertise. [Learn more](https://agentskills.io) or read the [skills specification](https://github.com/anthropics/skills).
+Follow these steps to add a new skill to the collection.
 
-### 1. Skill Structure
+### 1. Write Evals First
+
+Before writing any skill content, write the eval prompts and rubric. Evals define what a correct answer must include — independently of what the skill says. This is the quality control mechanism.
+
+1. Copy `evals/prompts/TEMPLATE.yaml`, rename it to `evals/prompts/maplibre-your-skill-name.yaml`.
+2. Write a rubric in `evals/rubrics/maplibre-your-skill-name.md` — a checklist of what correct answers must include. Keep each item specific enough for an LLM judge to evaluate objectively.
+3. Create a branch: `git checkout -b add-maplibre-your-skill-name`
+4. Open a draft PR with only the eval and rubric files for reviewer sign-off.
+5. Run the baseline check to confirm all tests fail without the skill — see [Proving tests fail without the skill](evals/README.md#proving-tests-fail-without-the-skill). If any test passes, the prompt is not testing skill-specific knowledge; revise it before continuing.
+6. Write the skill to make the evals pass.
+7. Run evals locally to confirm all pass (see [Running evals locally](#running-evals-locally)), then push.
+
+### 2. Skill Structure
 
 ```text
 skills/maplibre-your-skill-name/
@@ -80,45 +162,9 @@ skills/maplibre-your-skill-name/
 └── AGENTS.md             # Optional: short reference for the AI
 ```
 
-### 2. SKILL.md Format
+### 3. SKILL.md Format
 
 Every SKILL.md must have YAML frontmatter followed by markdown:
-
-```markdown
----
-name: maplibre-your-skill-name
-description: Brief one-line description of what this skill covers
----
-
-# Skill Title
-
-[Your skill content here]
-```
-
-- `name` must match the directory name exactly (e.g. `maplibre-tile-sources`).
-- `description` should be concise (1–2 sentences).
-- Content must include actionable guidance, not just reference text.
-
-### 3. Content Guidelines
-
-**Good skills have:**
-
-- Clear structure with headings
-- Actionable guidance (“Use X when Y”)
-- Decision tables or trees where helpful
-- Code examples (MapLibre GL JS, open APIs) with ✅/❌ where useful
-- Concrete thresholds or scenarios where relevant
-- Links to MapLibre docs or other open-source docs
-
-**Avoid:**
-
-- Generic text that only repeats official docs
-- Lists without context or prioritization
-- Vague guidance (“might want to”, “could consider”)
-
-**Reference:** Include references wherever possible, using the most stable and authoritative sources you can. See [Attribution and References](#attribution-and-references) below for a curated list of authoritative sources.
-
-### 4. Example Template
 
 ```markdown
 ---
@@ -143,9 +189,40 @@ Use this skill when:
 - [Other links]
 ```
 
+- `name` must match the directory name exactly (e.g. `maplibre-tile-sources`).
+- `description` should be concise (1–2 sentences).
+- Content must include actionable guidance, not just reference text.
+
+### 4. Content Guidelines
+
+**Good skills have:**
+
+- Clear structure with headings
+- Actionable guidance (“Use X when Y”)
+- Decision tables or trees where helpful
+- Code examples (MapLibre GL JS, open APIs) with ✅/❌ where useful
+- Concrete thresholds or scenarios where relevant
+- Links to MapLibre docs or other open-source docs
+
+**Avoid:**
+
+- Generic text that only repeats official docs
+- Lists without context or prioritization
+- Vague guidance (“might want to”, “could consider”)
+
+**Reference:** Include links to primary sources wherever possible. See [Attribution and References](#attribution-and-references) for a curated list.
+
+### 5. Test Your Skill
+
+Before publishing your PR:
+
+1. **Run all checks:** `npm run check` (fix any issues before continuing)
+2. **Run evals** and confirm all assertions pass — see [Running evals locally](#running-evals-locally)
+3. **Test with an AI assistant:** `npx skills add . -a claude-code`, then ask questions the skill should answer
+
 ## Attribution and References
 
-Here are examples of the authoritative sources you can use and reference in developing skill patterns:
+Reference these sources in skill content wherever possible:
 
 **MapLibre — core:**
 
@@ -193,38 +270,6 @@ Due to similarities and shared history, though it shouldn’t strictly be necess
 - For a skill or file that is substantially adapted from a Mapbox skill, you may add a short line at the top of the file, e.g.:
   `Adapted from mapbox-agent-skills. Copyright (c) Mapbox, Inc. Modifications (c) MapLibre and contributors.`
 - New, original content only needs the project’s usual license (see [LICENSE.md](LICENSE.md)).
-
-## Testing Your Skill
-
-Before submitting:
-
-1. **Run all checks:** `npm run check` (fix any issues before continuing)
-2. **Test with an AI assistant:** `npx skills add . -a claude-code`, then ask questions the skill should answer
-
-## Pull Request Process
-
-1. Create a branch: `git checkout -b add-maplibre-your-skill-name`
-2. Add or edit skills under `skills/maplibre-*/` (SKILL.md and optional AGENTS.md).
-3. Run `npm run check`.
-4. Commit with a clear message, e.g.:
-
-   ```bash
-   git commit -m "Add maplibre-your-skill-name skill
-
-   - What the skill covers
-   - Key topics"
-   ```
-
-5. Push and open a PR. The pre-push hook will run checks; CI will run them again. All must pass before merge.
-
-In the PR, describe the skill’s purpose, example use cases, and any prerequisites.
-
-## Skill Quality Standards
-
-- **Accurate** — Matches MapLibre and referenced APIs/docs
-- **Actionable** — Clear guidance, not just description
-- **Attribution** — When adapting from mapbox-agent-skills, preserve Mapbox copyright (see above)
-- **Consistent** — Format and style in line with existing skills
 
 ## Code of Conduct
 
