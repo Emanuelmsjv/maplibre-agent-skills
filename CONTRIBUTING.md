@@ -17,7 +17,7 @@ We’d love your help expanding this collection. Whether you’re a student stil
 **Why contribute?**
 
 - Share your hard-won knowledge with the open mapping community
-- Learn once and for all how to do that *thing* by explaining it concisely with a code sample
+- Learn once and for all how to do that _thing_ by explaining it concisely with a code sample
 - Shape how AI assistants recommend MapLibre patterns and open-source tools
 - Small, focused contributions are welcome — even a single well-documented pattern helps
 
