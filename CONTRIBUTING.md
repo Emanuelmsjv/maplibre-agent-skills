@@ -4,29 +4,32 @@ Thank you for your interest in contributing! This repository helps AI assistants
 
 We welcome:
 
-- **New skills** — Add expertise in areas not yet covered (tile sources, framework integration, performance, styling, geocoding, migration, etc.)
+- **New skills** — Add expertise in areas not yet covered
 - **Skill improvements** — Better examples, patterns, or guidance for existing skills
 - **Bug fixes** — Correct errors in instructions or examples
-- **Documentation** — Clearer README, CONTRIBUTING, or in-skill examples
+- **Documentation** — Clearer code samples or in-skill examples
 - **Questions** — Open an issue or contact the maintainers as appropriate
 
 ## Contribute a Skill
 
-We’d love your help expanding this collection. Whether you’re a student still learning, you build MapLibre maps from React, Vue, or Svelte, you use GL JS, Native, or React Native, or you’ve tackled geocoding, tile pipelines, routing, or map styling — **your experience can help AI assistants guide developers better**.
+We’d love your help expanding this collection. Whether you’re a student still learning or a seasoned professional building with MapLibre every day — **your experience can help AI assistants guide developers better**.
 
 **Why contribute?**
 
 - Share your hard-won knowledge with the open mapping community
+- Learn once and for all how to do that *thing* by explaining it concisely with a code sample
 - Shape how AI assistants recommend MapLibre patterns and open-source tools
 - Small, focused contributions are welcome — even a single well-documented pattern helps
 
 **How to get started:**
 
-1. **Check existing skills** — Review [skills/](./skills) to avoid duplication
-2. **Browse open issues** — Check [open issues](https://github.com/maplibre/maplibre-agent-skills/issues) for planned skills and comment on one you'd like to write
+1. **Check existing skills** — Review [skills/](./skills) to see what is already covered
+2. **Browse open issues** — Check [open issues](https://github.com/maplibre/maplibre-agent-skills/issues) for planned skills and comment with any requirements, resources or gotchas you think should also be covered
 3. **Open an issue** — Use the [issue template](./.github/ISSUE_TEMPLATE/skill_request.md) if you have an idea not yet on the list — we’re happy to help refine scope and requirements
 4. **Understand the requirements** — Review this page for skill structure, format, and quality guidelines
-5. **Review examples** — Use existing skills (e.g. [maplibre-tile-sources](skills/maplibre-tile-sources/SKILL.md)) as a reference for style and depth
+5. **Pick up a task** — Comment in the relevant issue — to confirm a maintainer is available to review, be explicit about how much of the outline you can cover
+6. **Review examples** — Use existing skills (e.g. [maplibre-tile-sources](skills/maplibre-tile-sources/SKILL.md)) as a reference for style and depth
+7. **Start with evals** — Get set up with an LLM API and write or revise prompts first to demonstrate where AI agents are failing
 
 New to [Agent Skills](https://agentskills.io)? The [skills specification](https://github.com/anthropics/skills) describes the general format. See [SKILL.md format](#3-skillmd-format) for how skills are structured in this repo specifically.
 
@@ -37,11 +40,11 @@ New to [Agent Skills](https://agentskills.io)? The [skills specification](https:
 Skills in this repo must be:
 
 - **Accurate** — Matches MapLibre and referenced APIs/docs
-- **Actionable** — Clear guidance, not just description
+- **Actionable** — Clear guidance, not just general, declarative descriptions
 - **Attribution** — Reference primary sources wherever possible, and always preserve Mapbox copyright (see [A note about adapted content](#a-note-about-adapted-content))
 - **Consistent** — Format and style in line with existing skills
 
-If you spot an error, omission, or quality gap, open an issue — or comment on an existing one you'd like to fix to confirm a maintainer is available to review.
+If you spot an error, omission, or quality gap, open an issue or comment on an existing one.
 
 ### Quality assurance mechanisms
 
