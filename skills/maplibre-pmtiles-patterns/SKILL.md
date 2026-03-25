@@ -136,7 +136,7 @@ The [pmtiles CLI](https://docs.protomaps.com/pmtiles/cli) is the official comman
 
 ## Generating PMTiles
 
-**Two paths:** **(1) Convert** — The PMTiles CLI converts MBTiles ↔ PMTiles only; it does not read GeoJSON, Shapefile, OSM, or other source formats. **(2) Generate from source data** — Tools like tippecanoe, Planetiler, and GDAL read from many file types or databases and produce vector tiles (PMTiles or MBTiles). If they output MBTiles, use `pmtiles convert` to get PMTiles.
+**Two paths:** **(1) Convert** — The PMTiles CLI converts MBTiles ↔ PMTiles only; it does not read GeoJSON, Shapefile, OSM, or other source formats. **(2) Generate from source data** — Tools like tippecanoe, Planetiler and ogr2ogr via GDAL read from many file types or databases and produce vector tiles (PMTiles or MBTiles). If they output MBTiles, use `pmtiles convert` to get PMTiles.
 
 ### PMTiles CLI (convert only: MBTiles ↔ PMTiles)
 
