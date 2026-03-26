@@ -29,6 +29,7 @@
     "maxzoom",
     "minzoom",
     "moveend",
+    "openstreetmap",
     "overzoom",
     "overzoomed",
     "overzooms",
