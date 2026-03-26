@@ -7,10 +7,11 @@
 # that pass without skill injection have no discriminating power and are excluded.
 #
 # Run locally (Cerebras — CI default; free, 14,400 RPD):
-#   CEREBRAS_API_KEY=... npx promptfoo@latest eval \
-#     --config evals/prompts/maplibre-tile-sources.yaml --no-cache -j 1
+#   npm run eval -- --config evals/prompts/maplibre-tile-sources.yaml --no-cache -j 1
 #
-# For a stronger judge, add: --grader google:gemini-2.5-flash-lite
+# Test 1 baseline requires a stricter judge; use Gemini with extra delay to avoid 429s:
+#   npm run eval -- --config evals/prompts/maplibre-tile-sources.yaml \
+#     --var injectSkill=false --grader google:gemini-2.5-flash-lite --delay 1500 --no-cache -j 1
 #
 # IMPORTANT: Do NOT use --providers CLI flag — it bypasses skill-prompt.mjs
 # and the skill will not be injected. Provider must be set in this YAML.
@@ -34,33 +35,54 @@ defaultTest:
     provider: cerebras:qwen-3-235b-a22b-instruct-2507
 
 tests:
-  - description: explicit — TileJSON endpoint as source
+  - description: explicit — GeoJSON vs tiles decision for a real scenario
     vars:
       prompt: >
-        My tile server exposes a TileJSON endpoint at /tiles.json.
-        How do I use that in a MapLibre source config?
+        I have about 8,000 hiking trail segments stored as GeoJSON, and
+        users need to click a trail to see its name and distance. I also
+        need a basemap showing terrain and roads. How should I set up the
+        data sources in MapLibre — do I need vector tiles, or can I use
+        GeoJSON?
     assert:
       - type: llm-rubric
         value: >
-          Shows a MapLibre source config using the `url` field pointing to
-          the TileJSON endpoint rather than a `tiles` array.
-          Explains that MapLibre reads the tile URL template, zoom range,
-          and source-layer metadata from the TileJSON automatically.
+          Must treat 8,000 features as a gray zone — not a clean
+          "use GeoJSON" or "use vector tiles" answer — and explain
+          the tradeoffs rather than jumping straight to a recommendation.
+          Must explain at least two of the following tradeoffs: GeoJSON
+          downloads the entire dataset on load (parse time grows with
+          feature count); GeoJSON gives full client-side attribute access
+          without a server round-trip, which benefits click/hover
+          interactions; vector tiles load only the visible viewport but
+          require generating and hosting tile infrastructure. Must explain
+          why GeoJSON is still a defensible choice for this scenario:
+          the dataset is interactive (click to see properties), which
+          favors GeoJSON's full attribute access, and the dataset size is
+          in the range where optimization (simplify geometries, reduce
+          coordinate precision) can keep load time acceptable. Must
+          describe the combination pattern: use a hosted basemap style URL
+          for terrain and roads, and add the trail data as a separate
+          GeoJSON source. Must not recommend building a custom tile server
+          or vector tile pipeline as the primary solution without
+          acknowledging that GeoJSON is a viable alternative here.
 
-  - description: implicit — custom style fails against hosted tiles
+  - description: implicit — custom style layers invisible against hosted tiles
     vars:
       prompt: >
         I'm using a hosted tile provider's style URL and everything looks
         great. But when I try to write my own custom style against the same
         tile source, none of my layers show up.
     assert:
+      - type: icontains
+        value: source-layer
       - type: llm-rubric
         value: >
           Explains that the custom style's layer definitions must reference
           `source-layer` names exactly as they appear in the tile source's
           schema. Directs the developer to the TileJSON `vector_layers` field
-          as the authoritative list of available source-layers. Explains
-          that the provider's pre-built style already has these matched.
+          as the authoritative list of available source-layer names. Explains
+          that the provider's pre-built style already has these matched and
+          that building a custom style requires knowing the schema.
 
   - description: anti-pattern — addLayer covering basemap labels
     vars:
@@ -74,17 +96,39 @@ tests:
       - type: llm-rubric
         value: >
           Explains that `map.addLayer()` without a second argument appends
-          the layer above everything including labels. Shows how to pass the
-          ID of the first symbol layer as the second argument to
-          `map.addLayer()` to insert the layer below labels. Includes or
-          describes finding the first symbol layer ID.
+          the layer above everything including labels. Shows the correct fix:
+          find the first layer with type `symbol` in the style, and pass
+          its ID as the second argument to `map.addLayer()` to insert the
+          data layer below labels. Must not only give hardcoded label layer
+          IDs from a specific provider's style (e.g. 'road-label') as the
+          primary answer — the programmatic approach works across any style.
 
-  - description: negative — out-of-scope question (popup on click)
+  - description: implicit — no text labels in custom style
     vars:
-      prompt: How do I show a popup when a user clicks on a map feature?
+      prompt: >
+        I set up a custom MapLibre style that points to my self-hosted tile
+        server. The map loads and the tiles are rendering correctly, but
+        there are no text labels anywhere on the map. What am I missing?
     assert:
       - type: llm-rubric
         value: >
-          Answers the popup/click question correctly without recommending
-          a specific tile provider or discussing tile source setup as if
-          it were relevant to this question.
+          Must explain that text labels in MapLibre require a `glyphs`
+          property at the root of the style, pointing to a font SDF endpoint
+          in the format `{fontstack}/{range}.pbf`. Must not focus primarily
+          on CORS or tile loading issues as the cause, since the user has
+          confirmed tiles are rendering correctly. May also mention `sprite`
+          as required for icons and symbols.
+
+  - description: negative — small dataset, no tile server needed
+    vars:
+      prompt: >
+        I'm building a store locator for about 50 locations across the US.
+        Do I need to set up a vector tile server for this?
+    assert:
+      - type: llm-rubric
+        value: >
+          Must say that 50 locations is well within the GeoJSON sweet spot
+          (under 5,000 features) and does NOT require a tile server or
+          vector tile infrastructure. Must not recommend setting up a tile
+          server, PMTiles pipeline, or tile generation workflow for a
+          dataset this small. May suggest GeoJSON source or markers.

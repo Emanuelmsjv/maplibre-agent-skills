@@ -143,6 +143,8 @@ what "failing without the skill" means in practice.
   and responses for the maplibre-mapbox-migration skill
 - [`example-pmtiles-patterns.md`](results/example-pmtiles-patterns.md) — full questions
   and responses for the maplibre-pmtiles-patterns skill
+- [`example-tile-sources.md`](results/example-tile-sources.md) — full questions
+  and responses for the maplibre-tile-sources skill
 
 ## CI
 

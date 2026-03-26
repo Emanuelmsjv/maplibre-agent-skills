@@ -132,6 +132,21 @@ map.on('load', () => {
 - **Raster imagery + vector labels** — add a raster source for satellite imagery, weather radar, historical imagery, heatmaps rendered server-side, or any imagery that isn't available as vector data. Add a vector source for roads, place names and other labels. This gives crisp imagery with crisp, resolution-independent vector geometries and labels on top.
 - **Vector basemap + raster-dem terrain** — add hillshading or 3D terrain to any vector basemap using a `raster-dem` source (elevation tiles). This is how MapLibre renders terrain and hillshade without a separate basemap style.
 
+### When to choose each approach
+
+Most real-world apps combine source types — a hosted basemap for the reference layer and your own data as a separate source. You rarely need to build a custom tile pipeline just for your data.
+
+| Scenario                                                        | Recommended source setup                                                         |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| < ~5,000 features, need click/hover interaction or live updates | GeoJSON — no tile server needed                                                  |
+| 5,000–100,000 features                                          | GeoJSON if you can simplify and accept 1–3s load delay; otherwise vector tiles   |
+| > 100,000 features or > 50 MB                                   | Vector tiles — generate with tippecanoe or Planetiler                            |
+| Street, terrain, or place basemap                               | Hosted tile service (OpenFreeMap, MapTiler) or self-hosted (Martin)              |
+| Your own data over any basemap                                  | Hosted basemap style URL + your data as a separate GeoJSON or vector tile source |
+| Satellite/aerial imagery + labels                               | Raster tile source for imagery + vector source for roads and labels              |
+
+The key distinction: the basemap and your data are almost always separate sources, even if both are vector tiles. The basemap provides context; your sources provide your application's data. Mixing them into a single custom tile source is rarely the right approach unless you are building a self-hosted map with full control of the tile pipeline.
+
 ## Hosting Tile Sources
 
 "Hosting" tile data can mean two different things:
@@ -153,12 +168,14 @@ Many providers offer hosted vector or raster tiles and pre-built style and tile 
 
 For a no-key starting point, [OpenFreeMap](https://openfreemap.org/) provides free hosted OpenStreetMap tiles with MapLibre-ready styles (`https://tiles.openfreemap.org/styles/liberty` or `/positron`). It is community-funded — if your app depends on it in production, consider [donating](https://openfreemap.org) or self-hosting to reduce load on shared infrastructure.
 
+**Do not use tile.openstreetmap.org** in production or for anything beyond very limited testing. The OpenStreetMap Foundation prohibits bulk and high-traffic use of their tile server; violating this blocks your IP. Use a hosted provider or self-host instead. See [switch2osm.org/providers](https://switch2osm.org/providers/) for a current provider list.
+
 - ✅ Global CDN; pre-built styles available
 - ✅ Handles global to local scale
 - ⚠️ Custom style layer definitions must match the schema of the hosted tile source
 - ⚠️ Vendor dependency
 - ⚠️ API keys required by most; check license, usage limits and pricing
-- ⚠️ Attribution requirements vary — verify before launch. Community-funded free services have usage policies; respect them, and give back through self-hosting or donations when your usage grows
+- ⚠️ Attribution required for OpenStreetMap-based tiles — at the same visual prominence as any other credit. OpenStreetMap data is licensed under the [ODbL](https://opendatacommons.org/licenses/odbl/); if you create an adapted database from OSM data, the share-alike clause requires you to release it under ODbL as well. Community-funded free services have usage policies; respect them, and give back through self-hosting or donations when your usage grows
 
 Store API keys in environment variables; never commit to source control.
 
@@ -169,7 +186,7 @@ Run your own server for full control over data, cost, and deployment. See [Tile 
 - ✅ Full control; no per-request cost at scale
 - ✅ Can serve dynamic data and convert to tiles on the fly
 - ✅ Supports air-gapped deployments
-- ⚠️ Data to process, and infrastructure to deploy and maintain
+- ⚠️ Data to process, and infrastructure to deploy and maintain. A global OpenStreetMap dataset requires approximately 1 TB of storage and 24 GB of RAM; a city-scale extract needs 10–20 GB of storage and 4 GB of RAM. See [switch2osm.org](https://switch2osm.org/serving-tiles/) for current hardware guidance.
 - ⚠️ You must configure CORS and supply glyphs and sprite in your style
 
 ## Custom styles
@@ -271,3 +288,4 @@ Hosted providers handle CORS for you. For self-hosted servers or static storage,
 11. **MapLibre GL Leaflet** — [github.com/maplibre/maplibre-gl-leaflet](https://github.com/maplibre/maplibre-gl-leaflet)
 12. **Cloud-native geospatial formats**: FlatGeobuf ([flatgeobuf.org](https://flatgeobuf.org/)), GeoParquet ([GeoParquet](https://geoparquet.org/)), Cloud-Optimized GeoTIFF ([COG website](https://cogeo.org/))
 13. **awesome-maplibre** — [github.com/maplibre/awesome-maplibre](https://github.com/maplibre/awesome-maplibre)
+14. **switch2osm.org** — Community guide to switching from Google Maps to OSM-based tile hosting, including provider list, self-hosting stack, hardware requirements, and ODbL licensing guidance — [switch2osm.org](https://switch2osm.org)
