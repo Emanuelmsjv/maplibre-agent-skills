@@ -32,3 +32,48 @@
         Must recommend using either --config or a CLI connection string,
         not both.
         A response saying both can be used together is WRONG.
+        
+- description: DATABASE_URL override does not log a warning
+  vars:
+    prompt: >
+      I tried running Martin with DATABASE_URL to override the config.
+      Does Martin log a warning?
+  assert:
+    - type: icontains
+      value: warning
+    - type: llm-rubric
+      value: >
+        Must state that Martin does not log any warning when DATABASE_URL
+        overrides the config.
+        A response that says Martin logs a warning is WRONG.
+
+- description: proxy headers alone not sufficient for TileJSON
+  vars:
+    prompt: >
+      I configured Nginx to pass X-Forwarded-Host and X-Forwarded-Proto
+      headers to Martin, but the TileJSON tiles field still shows
+      localhost. What else do I need to do?
+  assert:
+    - type: icontains
+      value: base_path
+    - type: llm-rubric
+      value: >
+        Must recommend setting base_path in Martin's YAML config file
+        as the reliable fix. Must name base_path explicitly.
+        May mention that X-Rewrite-URL header is respected if base_path
+        is not set, but base_path is the explicit recommended solution.
+        A response that recommends public_urls is WRONG.
+
+- description: Martin has no built-in API key auth config key
+  vars:
+    prompt: >
+      I need to add API key auth to Martin. What config key should I use?
+  assert:
+    - type: icontains
+      value: proxy
+    - type: llm-rubric
+      value: >
+        Must state that Martin has no built-in API key auth config key.
+        Must recommend handling authentication at the proxy level (e.g. Nginx).
+        A response that suggests a Martin config key for auth is WRONG.
+        
