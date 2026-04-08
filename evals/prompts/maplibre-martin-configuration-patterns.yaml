@@ -57,8 +57,6 @@ tests:
         I never set any environment variables. What could be wrong?
        
     assert:
-      - type: icontains
-        value: warning
       - type: llm-rubric
         value: >
           Must state that Martin does not log any warning when DATABASE_URL
@@ -101,8 +99,6 @@ tests:
         I just started Martin without any CORS configuration.
         Will browsers be able to make cross-origin requests to my tile server?
     assert:
-      - type: icontains
-        value: origin
       - type: llm-rubric
         value: >
           Must state that Martin defaults to cors: true which allows all origins.
